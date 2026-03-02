@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
-import { Car, Loader2 } from "lucide-react";
+import { Car, Loader2, BadgeCheck } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import type { AutoTraderVehicle } from "@/pages/Index";
 
 const carData: Record<string, string[]> = {
   "Audi": ["A1", "A3", "A4", "A5", "A6", "Q3", "Q5", "Q7", "TT"],
@@ -26,20 +27,24 @@ const engineSizes = ["1.0L", "1.2L", "1.4L", "1.5L", "1.6L", "1.8L", "2.0L", "2.
 
 interface VehicleDetailsFormProps {
   onSubmit: () => void;
+  autoTraderVehicle: AutoTraderVehicle;
 }
 
-const VehicleDetailsForm = ({ onSubmit }: VehicleDetailsFormProps) => {
-  const [vrm, setVrm] = useState("");
-  const [make, setMake] = useState("");
-  const [model, setModel] = useState("");
-  const [trim, setTrim] = useState("");
-  const [year, setYear] = useState("");
-  const [regDate, setRegDate] = useState<Date>();
-  const [mileage, setMileage] = useState("");
-  const [fuel, setFuel] = useState("");
-  const [transmission, setTransmission] = useState("");
-  const [engineSize, setEngineSize] = useState("");
-  const [vehicleValue, setVehicleValue] = useState("");
+const VehicleDetailsForm = ({ onSubmit, autoTraderVehicle }: VehicleDetailsFormProps) => {
+  // Pre-fill from Auto Trader mock data
+  const [vrm, setVrm] = useState(autoTraderVehicle.vrm);
+  const [make, setMake] = useState(autoTraderVehicle.make);
+  const [model, setModel] = useState(autoTraderVehicle.model);
+  const [trim, setTrim] = useState(autoTraderVehicle.trim);
+  const [year, setYear] = useState(autoTraderVehicle.year);
+  const [regDate, setRegDate] = useState<Date | undefined>(
+    new Date(`${autoTraderVehicle.year}-03-15`)
+  );
+  const [mileage, setMileage] = useState(autoTraderVehicle.mileage);
+  const [fuel, setFuel] = useState("Petrol");
+  const [transmission, setTransmission] = useState("Manual");
+  const [engineSize, setEngineSize] = useState("1.5L");
+  const [vehicleValue, setVehicleValue] = useState("12500");
   const [submitting, setSubmitting] = useState(false);
 
   const models = useMemo(() => (make ? carData[make] || [] : []), [make]);
@@ -78,6 +83,14 @@ const VehicleDetailsForm = ({ onSubmit }: VehicleDetailsFormProps) => {
         </h1>
         <p className="text-muted-foreground text-sm max-w-md mx-auto">
           We need a few details about your vehicle to check warranty eligibility and confirm your pricing.
+        </p>
+      </div>
+
+      {/* Auto Trader pre-fill notice */}
+      <div className="flex items-center gap-2 bg-primary/5 border border-primary/15 rounded-lg px-4 py-2.5 mb-4">
+        <BadgeCheck className="w-4 h-4 text-primary shrink-0" />
+        <p className="text-xs text-primary font-medium">
+          Key fields have been pre-filled from your Auto Trader listing. Please review and confirm.
         </p>
       </div>
 

@@ -9,6 +9,28 @@ import AgentView from "@/components/AgentView";
 
 const steps = ["Approved", "Warranty", "Vehicle Details", "Eligibility", "Registration"];
 
+export interface AutoTraderVehicle {
+  vrm: string;
+  make: string;
+  model: string;
+  year: string;
+  trim: string;
+  mileage: string;
+}
+
+export const AUTO_TRADER_VEHICLE: AutoTraderVehicle = {
+  vrm: "FD22 XTR",
+  make: "Ford",
+  model: "Focus",
+  year: "2022",
+  trim: "ST-Line",
+  mileage: "18500",
+};
+
+// Mock monthly finance payment — drives ClearScore plan recommendation
+// £285/mo → recommends "Plus" plan
+export const MOCK_MONTHLY_FINANCE = 285;
+
 const Index = () => {
   const [view, setView] = useState<"customer" | "agent">("customer");
   const [step, setStep] = useState(0);
@@ -16,6 +38,7 @@ const Index = () => {
   const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [simulateFailure, setSimulateFailure] = useState(false);
+  const [experimentMode, setExperimentMode] = useState(false);
 
   const handlePlanSelected = (plan: string, price: number) => {
     setSelectedPlan(plan);
@@ -40,6 +63,7 @@ const Index = () => {
     setSelectedPrice(null);
     setRegistrationComplete(false);
     setSimulateFailure(false);
+    setExperimentMode(false);
   };
 
   return (
@@ -116,13 +140,36 @@ const Index = () => {
         ) : (
           <>
             {step === 0 && <FinanceApproved onContinue={() => setStep(1)} />}
-            {step === 1 && <WarrantyUpsell onContinue={handlePlanSelected} />}
-            {step === 2 && <VehicleDetailsForm onSubmit={handleVehicleSubmit} />}
+            {step === 1 && (
+              <WarrantyUpsell
+                onContinue={handlePlanSelected}
+                monthlyPayment={MOCK_MONTHLY_FINANCE}
+                experimentMode={experimentMode}
+                onToggleExperiment={setExperimentMode}
+                autoTraderVehicle={AUTO_TRADER_VEHICLE}
+              />
+            )}
+            {step === 2 && (
+              <VehicleDetailsForm
+                onSubmit={handleVehicleSubmit}
+                autoTraderVehicle={AUTO_TRADER_VEHICLE}
+              />
+            )}
             {step === 3 && selectedPlan && selectedPrice && (
-              <EligibilityResult plan={selectedPlan} price={selectedPrice} onAddWarranty={handleAddWarranty} />
+              <EligibilityResult
+                plan={selectedPlan}
+                price={selectedPrice}
+                onAddWarranty={handleAddWarranty}
+                simulateFailure={simulateFailure}
+                experimentMode={experimentMode}
+              />
             )}
             {step === 4 && selectedPlan && selectedPrice && (
-              <WarrantyRegistration plan={selectedPlan} price={selectedPrice} simulateFailure={simulateFailure} />
+              <WarrantyRegistration
+                plan={selectedPlan}
+                price={selectedPrice}
+                simulateFailure={simulateFailure}
+              />
             )}
           </>
         )}

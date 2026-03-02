@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { AlertTriangle, Check, RefreshCw, ChevronDown, ChevronUp, BarChart3, Activity } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  RefreshCw,
+  ChevronDown,
+  ChevronUp,
+  BarChart3,
+  Activity,
+  TrendingUp,
+} from "lucide-react";
 
 interface AgentViewProps {
   selectedPlan: string | null;
@@ -8,6 +17,13 @@ interface AgentViewProps {
   simulateFailure: boolean;
   onToggleFailure: (val: boolean) => void;
 }
+
+// Mock partner cost per plan (monthly)
+const COMMERCIAL_DATA: Record<string, { partnerCost: number }> = {
+  Basic:   { partnerCost: 10.50 },
+  Plus:    { partnerCost: 14.50 },
+  Premium: { partnerCost: 18.00 },
+};
 
 const AgentView = ({
   selectedPlan,
@@ -38,6 +54,12 @@ const AgentView = ({
           : { status: "awaiting", message: "Customer has not yet completed registration" },
       };
 
+  // Commercial metric calculations
+  const commercialData = selectedPlan ? COMMERCIAL_DATA[selectedPlan] : null;
+  const partnerCost = commercialData?.partnerCost ?? null;
+  const margin = selectedPrice !== null && partnerCost !== null ? selectedPrice - partnerCost : null;
+  const contribution = margin !== null && selectedPrice ? (margin / selectedPrice) * 100 : null;
+
   return (
     <div className="animate-fade-in space-y-6">
       <div className="flex items-center justify-between mb-2">
@@ -46,6 +68,8 @@ const AgentView = ({
           <span className="text-muted-foreground">Simulate API Failure</span>
           <button
             onClick={() => onToggleFailure(!simulateFailure)}
+            role="switch"
+            aria-checked={simulateFailure}
             className={`relative w-11 h-6 rounded-full transition-colors ${
               simulateFailure ? "bg-destructive" : "bg-muted"
             }`}
@@ -59,7 +83,7 @@ const AgentView = ({
         </label>
       </div>
 
-      {/* Customer Info */}
+      {/* ── Customer Details ──────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-display font-semibold text-foreground mb-3">Customer Details</h3>
         <div className="grid grid-cols-2 gap-3 text-sm">
@@ -84,7 +108,67 @@ const AgentView = ({
         </div>
       </div>
 
-      {/* API Status */}
+      {/* ── Commercial Metrics ────────────────────────────────────────── */}
+      <div className="bg-card border border-border rounded-xl p-5">
+        <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-accent" />
+          Commercial Metrics
+          <span className="ml-auto text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            Internal
+          </span>
+        </h3>
+
+        {selectedPlan && selectedPrice && margin !== null && contribution !== null ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <CommercialCard
+              label="Customer Price"
+              value={`£${selectedPrice.toFixed(2)}`}
+              sub="/mo"
+            />
+            <CommercialCard
+              label="Est. Partner Cost"
+              value={`£${partnerCost!.toFixed(2)}`}
+              sub="/mo"
+              muted
+            />
+            <CommercialCard
+              label="Gross Margin"
+              value={`£${margin.toFixed(2)}`}
+              sub="/mo"
+              highlight
+            />
+            <CommercialCard
+              label="Contribution %"
+              value={`${contribution.toFixed(0)}%`}
+              highlight
+            />
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No plan selected yet — metrics will appear once the customer chooses a plan.
+          </p>
+        )}
+
+        {selectedPlan && margin !== null && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+              <div
+                className="h-2 rounded-full bg-accent transition-all duration-700"
+                style={{ width: `${Math.min(contribution ?? 0, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
+              <span>Partner cost</span>
+              <span className="font-medium text-foreground">
+                {contribution?.toFixed(1)}% margin on {selectedPlan} plan
+              </span>
+              <span>Revenue</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── API Status ────────────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-display font-semibold text-foreground mb-3">API Status</h3>
         <div className="space-y-3">
@@ -120,7 +204,7 @@ const AgentView = ({
         )}
       </div>
 
-      {/* API Log */}
+      {/* ── API Response Log ──────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-display font-semibold text-foreground mb-3">API Response Log</h3>
         <pre className="bg-primary text-primary-foreground rounded-lg p-4 text-xs overflow-x-auto font-mono leading-relaxed">
@@ -128,7 +212,7 @@ const AgentView = ({
         </pre>
       </div>
 
-      {/* Metrics */}
+      {/* ── Live Product Metrics ──────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-accent" />
@@ -142,7 +226,7 @@ const AgentView = ({
         </div>
       </div>
 
-      {/* Integration Overview */}
+      {/* ── Integration Overview ──────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
         <button
           onClick={() => setShowIntegration(!showIntegration)}
@@ -184,19 +268,21 @@ const AgentView = ({
   );
 };
 
+// ── Sub-components ────────────────────────────────────────────────────────
+
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
-    Success: "bg-success/15 text-success",
+    Success:   "bg-success/15 text-success",
     Confirmed: "bg-success/15 text-success",
-    Pending: "bg-warning/15 text-warning",
-    Error: "bg-destructive/15 text-destructive",
-    Failed: "bg-destructive/15 text-destructive",
+    Pending:   "bg-warning/15 text-warning",
+    Error:     "bg-destructive/15 text-destructive",
+    Failed:    "bg-destructive/15 text-destructive",
   };
   const icons: Record<string, React.ReactNode> = {
-    Success: <Check className="w-3 h-3" />,
+    Success:   <Check className="w-3 h-3" />,
     Confirmed: <Check className="w-3 h-3" />,
-    Error: <AlertTriangle className="w-3 h-3" />,
-    Failed: <AlertTriangle className="w-3 h-3" />,
+    Error:     <AlertTriangle className="w-3 h-3" />,
+    Failed:    <AlertTriangle className="w-3 h-3" />,
   };
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${styles[status] || "bg-muted text-muted-foreground"}`}>
@@ -206,7 +292,39 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const MetricCard = ({ label, value, target, alert }: { label: string; value: string; target?: string; alert?: boolean }) => (
+const CommercialCard = ({
+  label,
+  value,
+  sub,
+  highlight,
+  muted,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  highlight?: boolean;
+  muted?: boolean;
+}) => (
+  <div className={`rounded-lg p-3 ${highlight ? "bg-accent/10 border border-accent/20" : "bg-muted/50"}`}>
+    <p className="text-xs text-muted-foreground mb-1">{label}</p>
+    <p className={`text-xl font-display font-bold ${highlight ? "text-accent" : muted ? "text-muted-foreground" : "text-foreground"}`}>
+      {value}
+      {sub && <span className="text-xs font-normal text-muted-foreground">{sub}</span>}
+    </p>
+  </div>
+);
+
+const MetricCard = ({
+  label,
+  value,
+  target,
+  alert,
+}: {
+  label: string;
+  value: string;
+  target?: string;
+  alert?: boolean;
+}) => (
   <div className="bg-muted/50 rounded-lg p-3">
     <p className="text-xs text-muted-foreground mb-1">{label}</p>
     <p className={`text-xl font-display font-bold ${alert ? "text-destructive" : "text-foreground"}`}>{value}</p>
@@ -214,7 +332,15 @@ const MetricCard = ({ label, value, target, alert }: { label: string; value: str
   </div>
 );
 
-const IntegrationStep = ({ step, title, description }: { step: number; title: string; description: string }) => (
+const IntegrationStep = ({
+  step,
+  title,
+  description,
+}: {
+  step: number;
+  title: string;
+  description: string;
+}) => (
   <div className="flex gap-3">
     <div className="w-7 h-7 rounded-full bg-accent/15 flex items-center justify-center shrink-0">
       <span className="text-xs font-bold text-accent">{step}</span>
