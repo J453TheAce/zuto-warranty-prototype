@@ -69,52 +69,54 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             {step > 0 && view === "customer" && (
               <button
                 onClick={() => setStep((s) => s - 1)}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <div className="flex items-center gap-3">
-              <h2 className="font-display font-bold text-foreground text-lg">
+            <div className="flex items-center gap-2 min-w-0">
+              <h2 className="font-display font-bold text-foreground text-base sm:text-lg whitespace-nowrap">
                 AutoGuard<span className="text-accent">+</span>
               </h2>
-              <div className="flex items-center gap-1.5 border-l border-border pl-3">
-                <span className="text-xs text-muted-foreground">Powered by</span>
+              <div className="flex items-center gap-1.5 border-l border-border pl-2 sm:pl-3">
+                <span className="hidden sm:inline text-xs text-muted-foreground whitespace-nowrap">Powered by</span>
                 <img
                   src="https://cdn.zuto.cloud/assets/images/zuto-logo.svg"
                   alt="Zuto"
-                  className="h-4 w-auto"
+                  className="h-4 w-auto flex-shrink-0"
                 />
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {(step > 0 || view === "agent") && (
               <button
                 onClick={handleReset}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden sm:inline text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
               >
                 Reset Demo
               </button>
             )}
             <button
               onClick={() => setView(view === "customer" ? "agent" : "customer")}
-              className="inline-flex items-center gap-1.5 text-sm font-medium bg-muted text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium bg-muted text-muted-foreground hover:text-foreground px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
             >
               {view === "customer" ? (
                 <>
-                  <Users className="w-3.5 h-3.5" />
-                  Agent View
+                  <Users className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="sm:hidden">Agent</span>
+                  <span className="hidden sm:inline">Agent View</span>
                 </>
               ) : (
                 <>
-                  <User className="w-3.5 h-3.5" />
-                  Customer View
+                  <User className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="sm:hidden">Customer</span>
+                  <span className="hidden sm:inline">Customer View</span>
                 </>
               )}
             </button>
