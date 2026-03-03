@@ -18,13 +18,14 @@
     --primary: 220 60% 20%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 170 60% 40%;
+    --secondary: 200 90% 47%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 14% 92%;
     --muted-foreground: 220 10% 46%;
 
-    --accent: 170 60% 40%;
+    /* Zuto brand blue #0C9CE4 */
+    --accent: 200 90% 47%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -32,17 +33,18 @@
 
     --border: 220 13% 87%;
     --input: 220 13% 87%;
-    --ring: 170 60% 40%;
+    --ring: 200 90% 47%;
 
     --radius: 0.75rem;
 
-    --success: 152 60% 40%;
+    /* Zuto success teal #0fb799 */
+    --success: 169 82% 39%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --badge-popular: 170 60% 40%;
+    --badge-popular: 200 90% 47%;
     --badge-popular-foreground: 0 0% 100%;
 
     --sidebar-background: 0 0% 98%;
@@ -64,22 +66,24 @@
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222 47% 11%;
-    --secondary: 170 60% 40%;
+    --secondary: 200 85% 55%;
     --secondary-foreground: 0 0% 100%;
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 170 60% 40%;
+    /* Zuto brand blue — lighter for dark backgrounds */
+    --accent: 200 85% 55%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 212 27% 84%;
-    --success: 152 60% 40%;
+    --ring: 200 85% 55%;
+    /* Zuto success teal #0fb799 */
+    --success: 169 82% 39%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    --badge-popular: 170 60% 40%;
+    --badge-popular: 200 85% 55%;
     --badge-popular-foreground: 0 0% 100%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

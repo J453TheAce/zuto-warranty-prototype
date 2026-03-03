@@ -79,9 +79,19 @@ const Index = () => {
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <h2 className="font-display font-bold text-foreground text-lg">
-              AutoGuard<span className="text-accent">+</span>
-            </h2>
+            <div className="flex items-center gap-3">
+              <h2 className="font-display font-bold text-foreground text-lg">
+                AutoGuard<span className="text-accent">+</span>
+              </h2>
+              <div className="flex items-center gap-1.5 border-l border-border pl-3">
+                <span className="text-xs text-muted-foreground">Powered by</span>
+                <img
+                  src="https://cdn.zuto.cloud/assets/images/zuto-logo.svg"
+                  alt="Zuto"
+                  className="h-4 w-auto"
+                />
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {(step > 0 || view === "agent") && (
